@@ -4,7 +4,7 @@ import StatsDisplay from "../StatsDisplay/StatsDisplay";
 import { TextInput } from "../TextInput/TextInput";
 
 
-function CharacterCounter({  }: CharacterCounterProps) {
+function CharacterCounter({minWords, maxWords, targetReadingTime}: CharacterCounterProps) {
 
     const defaultReadingTime: number = 0.00;
     const [charCount, setCharCount] = useState(0);
@@ -38,12 +38,18 @@ function CharacterCounter({  }: CharacterCounterProps) {
         readingTime: readingTime,
     }
 
+    const characterCounterProps:CharacterCounterProps={
+        minWords:minWords, 
+        maxWords:maxWords,
+        targetReadingTime:targetReadingTime
+    }
+
 
 
     return (<>
 
         <TextInput onTextChange={handleTextChange}></TextInput>
-        <StatsDisplay stats={textStats} showReadingTime={true} />
+        <StatsDisplay stats={textStats} showReadingTime={true} characterCounterProps={characterCounterProps}/>
 
         {/* <span className="text-xs text-gray-500">Min: {minWords?minWords:0} | Max: {maxWords?maxWords:0} 
         {(targetReadingTime && targetReadingTime!= undefined) ? 

@@ -1,11 +1,10 @@
 import './App.css'
-import StatsDisplay from './components/StatsDisplay/StatsDisplay'
-import CharacterCount from "./components/CharacterCounter/CharacterCounter";
+import CharacterCounter from "./components/CharacterCounter/CharacterCounter";
 
 function App() {
   return (
     <>
-      <CharacterCount minWords={25} maxWords={100}></CharacterCount>
+      <CharacterCounter minWords={25} maxWords={100}></CharacterCounter>
     </>
   )
 }
