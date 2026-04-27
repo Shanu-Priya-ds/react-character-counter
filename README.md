@@ -1,73 +1,95 @@
-# React + TypeScript + Vite
+# Character Counter
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React component that tracks character count, word count, and estimated reading time in real-time.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Components
 
-## React Compiler
+### `CharacterCounter`
+The top-level component. Manages state and passes data down to child components.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Props:**
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `minWords` | `number` | No | Minimum word count goal |
+| `maxWords` | `number` | No | Maximum word count limit |
+| `targetReadingTime` | `number` | No | Target reading time in minutes |
 
-## Expanding the ESLint configuration
+**Usage:**
+```tsx
+// With all props
+<CharacterCounter minWords={25} maxWords={100} targetReadingTime={1} />
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+// Word limits only
+<CharacterCounter minWords={10} maxWords={50} />
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+// No limits — just live stats
+<CharacterCounter />
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### `TextInput`
+A textarea that fires a callback on every keystroke.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+**Props:**
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `onTextChange` | `(text: string) => void` | Yes | Called on every keystroke with current text |
+| `placeholder` | `string` | No | Placeholder text (default: `"Start typing..."`) |
+| `initialValue` | `string` | No | Initial text value (default: `""`) |
+
+**Usage:**
+```tsx
+<TextInput
+  onTextChange={(text) => console.log(text)}
+  placeholder="Write something..."
+/>
 ```
+
+---
+
+### `StatsDisplay`
+Displays character count, word count, reading time, progress bar, and warnings.
+
+**Props:**
+| Prop | Type | Required | Description |
+|---|---|---|---|
+| `stats` | `TextStats` | Yes | `{ characterCount, wordCount, readingTime }` |
+| `showReadingTime` | `boolean` | No | Whether to show reading time section |
+| `characterCounterProps` | `CharacterCounterProps` | Yes | Passes `minWords`, `maxWords`, `targetReadingTime` |
+
+---
+
+## Features
+
+- **Live stats** — character count, word count, and reading time update on every keystroke
+- **Progress bar** — shows how close word count is to `maxWords`
+- **Warnings:**
+  - Shows `"Too short!"` when word count is below `minWords`
+  - Shows `"Word limit exceeded!"` when word count is above `maxWords`
+- **Reading time** — calculated at 200 words per minute
+
+---
+
+## Getting Started
+
+```bash
+npm install
+npm run dev
+```
+
+## Reflection
+
+### How did you handle state updates when the text changed?
+- CharacterCounter defines handleTextChange and passes it down to TextInput as a prop. TextInput just calls it for every keystroke on the textarea in textInput.
+- Character counter handled useState hook for updating the charCount, wordCount and readingTime when the textInput value changes
+### What considerations did you make when calculating reading time?
+- The average person reads 200 words per minute, so calculated the reading time in minutes `wordCount / 200` 
+- rounded the result decimal to two places using toFiexd(2). 
+### How did you ensure the UI remained responsive during rapid text input?
+- React's useState hook update only the affected components on every key stroke, keeping updates efficient.
+### What challenges did you face when implementing the statistics calculations?
+- used split method to get the words array, but when you use special character at the end, white space were added as a last item to the array, which miscalculated the word count
+- added filter() function to the split method which removes the empty item getting added to the array.
