@@ -4,7 +4,7 @@ import StatsDisplay from "../StatsDisplay/StatsDisplay";
 import { TextInput } from "../TextInput/TextInput";
 
 
-function CharacterCounter({minWords, maxWords, targetReadingTime}: CharacterCounterProps) {
+function CharacterCounter({ minWords, maxWords, targetReadingTime }: CharacterCounterProps) {
 
     const defaultReadingTime: number = 0.00;
     const [charCount, setCharCount] = useState(0);
@@ -16,7 +16,7 @@ function CharacterCounter({minWords, maxWords, targetReadingTime}: CharacterCoun
         let wordCount: number = 0;
         let readingTime: number = defaultReadingTime;
         if (text.length > 0) {
-            const wordsArray: string[] = text.trim().split(/[\s,.!?]+/);
+            const wordsArray: string[] = text.trim().split(/[!?\s,.]+/).filter(Boolean);
             console.log(wordsArray);
             wordCount = wordsArray.length;
             readingTime = Number((wordCount / 200).toFixed(2));
@@ -38,10 +38,10 @@ function CharacterCounter({minWords, maxWords, targetReadingTime}: CharacterCoun
         readingTime: readingTime,
     }
 
-    const characterCounterProps:CharacterCounterProps={
-        minWords:minWords, 
-        maxWords:maxWords,
-        targetReadingTime:targetReadingTime
+    const characterCounterProps: CharacterCounterProps = {
+        minWords: minWords,
+        maxWords: maxWords,
+        targetReadingTime: targetReadingTime
     }
 
 
@@ -49,11 +49,7 @@ function CharacterCounter({minWords, maxWords, targetReadingTime}: CharacterCoun
     return (<>
 
         <TextInput onTextChange={handleTextChange}></TextInput>
-        <StatsDisplay stats={textStats} showReadingTime={true} characterCounterProps={characterCounterProps}/>
-
-        {/* <span className="text-xs text-gray-500">Min: {minWords?minWords:0} | Max: {maxWords?maxWords:0} 
-        {(targetReadingTime && targetReadingTime!= undefined) ? 
-        " | Target Reading Time:" + targetReadingTime : null}</span> */}
+        <StatsDisplay stats={textStats} showReadingTime={true} characterCounterProps={characterCounterProps} />
     </>);
 }
 export default CharacterCounter;
